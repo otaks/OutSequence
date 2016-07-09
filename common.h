@@ -20,3 +20,9 @@ typedef struct sequence_t {
 
 
 
+//ŠÖ”
+typedef struct _func {
+	char* mName;	//ƒ‚ƒWƒ…[ƒ‹–¼
+	char* name;	//ŠÖ”–¼
+	list callFuncs;	//ŒÄ‚Ño‚µŠÖ”ŒQ
+}func;	

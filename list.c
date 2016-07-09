@@ -39,11 +39,18 @@ void list_delete( list t ) {
 		{
 		case STRING:
 			FREE( a->data );
+			break;
 		case STRUCT_SIGNAL:
 			FREE( ( ( signal* )a->data )->name );
 			FREE( ( ( signal* )a->data )->sendModuleName );
 			FREE( ( ( signal* )a->data )->receiveModuleName );
 			FREE( a->data );
+			break;
+		case STRUCT_FUNC:
+			FREE( ( ( func* )a->data )->name );
+			list_delete( ( ( func* )a->data )->callFuncs );
+			FREE( a->data );
+			break;
 		default:
 			break;
 		}
@@ -65,7 +72,8 @@ node* list_getLastNode_s( list t ) {
 }
 
 //ノード追加
-bool list_add( list t, void* v) {
+//bool_ list_add( list t, void* v) {
+int list_add( list t, void* v ) {
 
 	//ノード作成、
 	node* newNode = ( node* )calloc( sizeof( struct _node ), 1 );
@@ -88,6 +96,17 @@ bool list_add( list t, void* v) {
 		//受信モジュール名
 		( ( signal* )newNode->data )->receiveModuleName = ( char* )calloc( strlen( ( ( signal* )v )->receiveModuleName ) + 1, 1 );
 		strcpy( ( char* )( ( signal* )newNode->data )->receiveModuleName, ( ( signal* )v )->receiveModuleName );
+		break;
+	case STRUCT_FUNC:
+		newNode->data = ( func* )calloc( sizeof( func ), 1 );
+		//モジュール名
+		( ( func* )newNode->data )->mName = ( char* )calloc( strlen( ( ( func* )v )->mName ) + 1, 1 );
+		strcpy( ( char* )( ( func* )newNode->data )->mName, ( ( func* )v )->mName );
+		//関数名
+		( ( func* )newNode->data )->name = ( char* )calloc( strlen( ( ( func* )v )->name ) + 1, 1 );
+		strcpy( ( char* )( ( func* )newNode->data )->name, ( ( func* )v )->name );
+		//呼び出し関数群
+		( ( func* )newNode->data )->callFuncs = list_create( STRING );
 		break;
 	default:
 		break;
@@ -121,4 +140,9 @@ void* list_getNode( list t, int i ) {
 		}
 	}
 	return n->data;
+}
+
+//文字列ノード取得
+char* list_getCharNode( list t, int i ) {
+	return ( char * )list_getNode(t, i);
 }
