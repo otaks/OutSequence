@@ -98,6 +98,8 @@ int list_add( list t, void* v ) {
 		//受信モジュール名
 		( ( signal* )newNode->data )->receiveModuleName = ( char* )calloc( strlen( ( ( signal* )v )->receiveModuleName ) + 1, 1 );
 		strcpy( ( char* )( ( signal* )newNode->data )->receiveModuleName, ( ( signal* )v )->receiveModuleName );
+		//リクエストか
+		( ( signal* )newNode->data )->isReq = ( ( signal* )v )->isReq;
 		break;
 	case STRUCT_FUNC:
 		newNode->data = ( func* )calloc( sizeof( func ), 1 );

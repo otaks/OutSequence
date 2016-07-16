@@ -7,6 +7,7 @@ typedef struct signal_t {
 	char* sendModuleName;	//送信モジュール名
 	char* receiveModuleName;	//受信モジュール名
 	char* name;	//信号名
+	int isReq;	//1:true, 0:false
 }signal;
 
 //シーケンス図

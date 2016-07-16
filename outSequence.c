@@ -4,6 +4,7 @@
 #include "common.h"
 #include "findFile.h"
 #include "analyzeCtl.h"
+#include<conio.h>
 
 static void init( char* dir, list* headerFilePathList, list* sourceFilePathList, sequence* seq );
 static void fin( list headerFilePathList, list sourceFilePathList, sequence* seq );
@@ -14,6 +15,11 @@ int main( int argc, char *argv[] ) {
 	sequence seq;	//シーケンス図
 	list headerFilePathList;	//ヘッダファイルパスリスト
 	list sourceFilePathList;	//ソースファイルパスリスト
+
+#if _DEBUG
+	printf( "debug timing." );
+	getch();
+#endif
 
 	if( argc != 2 ) {
 		return -1;
@@ -31,6 +37,7 @@ int main( int argc, char *argv[] ) {
 	//終了処理
 	fin( headerFilePathList, sourceFilePathList, &seq );
 
+	printf( "カレントディレクトリにresult.txtを出力しました。" );
 	return 0;
 }
 
@@ -64,7 +71,8 @@ static void output( char* dirName, sequence* seq ) {
 
 	FILE *fp;
 
-	if( ( fp = fopen( "d:\\result.txt", "w" ) ) == NULL ) {
+	//if( ( fp = fopen( "d:\\result.txt", "w" ) ) == NULL ) {
+	if( ( fp = fopen( "result.txt", "w" ) ) == NULL ) {
 		printf( "file open error!!\n" );
 		exit( EXIT_FAILURE );
 	}
@@ -75,7 +83,7 @@ static void output( char* dirName, sequence* seq ) {
 	}
 	for( int i = 0; i < list_getNum( seq->signalList ); i++ ) {
 		signal* s = ( signal* )list_getNode( seq->signalList, i );
-		fprintf( fp, "%s -> %s : %s\n", s->sendModuleName, s->receiveModuleName, s->name );
+		fprintf( fp, "%s %s %s : %s\n", s->sendModuleName, ((s->isReq==1)?"->":"-->"), s->receiveModuleName, s->name );
 	}
 	fprintf( fp, "@enduml\n" );
 

@@ -42,9 +42,6 @@
     <ClCompile Include="analyzeCtl.c">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="test_analyzeCtl.c">
-      <Filter>ソース ファイル\test</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h">

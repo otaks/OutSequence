@@ -183,12 +183,14 @@ static void analyze_addSignalRec_s( sequence* seq, func* f, func* preF, list fun
 	memset( &s, 0x00, sizeof( s ) );
 	s.name = f->name;
 	s.receiveModuleName = f->mName;
-	if( preF == NULL ) {
-		s.sendModuleName = f->mName;
-	}
-	else {
-		s.sendModuleName = preF->mName;
-	}
+	//if( preF == NULL ) {
+	//	s.sendModuleName = f->mName;
+	//}
+	//else {
+	//	s.sendModuleName = preF->mName;
+	//}
+	s.sendModuleName = ( preF == NULL ? f->mName : preF->mName );
+	s.isReq = 1;
 	list_add( seq->signalList, &s );
 
 	if( list_getNum( f->callFuncs ) != 0 ) {
@@ -198,6 +200,22 @@ static void analyze_addSignalRec_s( sequence* seq, func* f, func* preF, list fun
 			analyze_addSignalRec_s( seq, targetF, f, funcs );
 		}
 	}
+
+	//シーケンス図に信号追加
+	signal s2;
+	memset( &s2, 0x00, sizeof( s ) );
+	s2.name = " ";
+	s2.receiveModuleName = ( preF == NULL ? f->mName : preF->mName );
+	s2.sendModuleName = f->mName;
+	//if( preF == NULL ) {
+	//	s2.receiveModuleName = preF->mName;
+	//}else{
+	//	s2.sendModuleName = preF->mName;
+	//}
+	//else {
+	//	s2.sendModuleName = f->mName;
+	//}
+	list_add( seq->signalList, &s2 );
 }
 
 static func* analyze_getTargetFunc_s( list funcs, char* targetFuncName ) {
