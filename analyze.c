@@ -41,8 +41,11 @@ void analyze_getFuncs( list headerFilePathList, list funcs ) {
 				memset( &f, 0x00, sizeof( f ) );
 				char t[ 1000 ] = { 0 };
 				char t2[ 1000 ] = { 0 };
+				memset( t, 0x00, sizeof( t ) );
+				memset( t2, 0x00, sizeof( t2 ) );
 
 				analyze_getFuncName_s( s, t );
+				if( strlen( t ) == 0 )continue;
 				f.name = t;
 				//f.name = calloc( strlen( t ) + 1, 1 );
 				//strcpy( f.name, t );
@@ -64,7 +67,8 @@ void analyze_getFuncs( list headerFilePathList, list funcs ) {
 
 static void analyze_gettypeAndName_s( char* line, char* t2 ) {
 	int i, j;
-	for( i = strlen( line ) - 1; i >= 0; i-- ) {
+	//for( i = strlen( line ) - 1; i >= 0; i-- ) {
+	for( i = 0; i < strlen( line ); i++ ) {
 		if( line[ i ] == '(' ) {
 			break;
 		}
@@ -72,7 +76,13 @@ static void analyze_gettypeAndName_s( char* line, char* t2 ) {
 	i--;
 
 	int l = 0;
-	for( int k = 0; k <= i; k++ ) {
+	int k;
+	if( strstr( line, "extern " ) != NULL ) {
+		k = 7;
+	}else{
+		k = 0;
+	}
+	for( ; k <= i; k++ ) {
 		t2[ l++ ] = line[ k ];
 	}
 }
@@ -102,7 +112,8 @@ static void analyze_getModuleName_s( char* t2, char* h ) {
 static int analyze_isDefineLine_s( char* line ) {
 	if( ( strchr( line, '(' ) != NULL ) &&
 		( strchr( line, ')' ) != NULL ) &&
-		( strchr( line, ';' ) != NULL ) ) {
+		( strchr( line, ';' ) != NULL ) &&
+		(line[0] != '#')) {
 		return TRUE;
 	}
 	return FALSE;
@@ -122,7 +133,8 @@ void *lily_mallock(size_t);
 */
 static void analyze_getFuncName_s( char* line, char* t ) {
 	int i, j;
-	for( i = strlen( line ) - 1; i >= 0; i-- ) {
+	//for( i = strlen( line ) - 1; i >= 0; i-- ) {
+	for( i = 0; i < strlen( line ); i++ ) {
 		if( line[ i ] == '(' ) {
 			break;
 		}
@@ -181,8 +193,10 @@ static void analyze_addSignalRec_s( sequence* seq, func* f, func* preF, list fun
 	//シーケンス図に信号追加
 	signal s;
 	memset( &s, 0x00, sizeof( s ) );
+	if( f->mName == NULL )return;
 	s.name = f->name;
 	s.receiveModuleName = f->mName;
+	
 	//if( preF == NULL ) {
 	//	s.sendModuleName = f->mName;
 	//}
@@ -191,6 +205,7 @@ static void analyze_addSignalRec_s( sequence* seq, func* f, func* preF, list fun
 	//}
 	s.sendModuleName = ( preF == NULL ? f->mName : preF->mName );
 	s.isReq = 1;
+	//if( f->mName == NULL )return;
 	list_add( seq->signalList, &s );
 
 	if( list_getNum( f->callFuncs ) != 0 ) {
@@ -303,9 +318,14 @@ static void analyze_isFunc_s( char* line, list funcs, func* f ) {
 		func* tf = list_getNode( funcs, i );
 		//char* name = list_getCharNode( funcs, i );
 		char t[ 1000 ] = { 0 };
+		char t2[ 1000 ] = { 0 };
+		memset( t, 0x00, sizeof( t ) );
+		memset( t2, 0x00, sizeof( t2 ) );
 		sprintf( t, " %s(", tf->name );
+		sprintf( t2, "\t%s(", tf->name );
 		//if( (strstr(line, tf->name) != NULL) && (strcmp(f->name, tf->name) != 0)) {
-		if( ( strstr( line, t ) != NULL ) && ( strcmp( f->name, tf->name ) != 0 ) ) {
+		if( (( strstr( line, t ) != NULL ) || ( strstr( line, t2 ) != NULL ) )
+			&& ( strcmp( f->name, tf->name ) != 0 ) ) {
 			list_add( f->callFuncs, tf->name );
 		}
 	}

@@ -17,8 +17,9 @@ int main( int argc, char *argv[] ) {
 	list sourceFilePathList;	//ソースファイルパスリスト
 
 #if _DEBUG
-	printf( "debug timing." );
+	printf( "debug timing. press any key." );
 	getch();
+	printf( "\n" );
 #endif
 
 	if( argc != 2 ) {
@@ -37,7 +38,8 @@ int main( int argc, char *argv[] ) {
 	//終了処理
 	fin( headerFilePathList, sourceFilePathList, &seq );
 
-	printf( "カレントディレクトリにresult.txtを出力しました。" );
+	//printf( "カレントディレクトリにresult.txtを出力しました。" );
+	printf( "result.txt is generated in the current dirctory.\n" );
 	return 0;
 }
 

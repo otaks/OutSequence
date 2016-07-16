@@ -11,8 +11,16 @@ int main() {
 		list funcs = list_create( STRUCT_FUNC );
 
 
-		findFile_find( ".h", "D:\\00.data\\06.ˆêŸ‰ğ“€æ\\lily-master\\src\\", headerFilePathList );
-		findFile_find( ".c", "D:\\00.data\\06.ˆêŸ‰ğ“€æ\\lily-master\\src\\", sourceFilePathList );
+		//findFile_find( ".h", "D:\\00.data\\06.ˆêŸ‰ğ“€æ\\lily-master\\src\\", headerFilePathList );
+		//findFile_find( ".c", "D:\\00.data\\06.ˆêŸ‰ğ“€æ\\lily-master\\src\\", sourceFilePathList );
+
+		//mainŠÖ”•ª’Ç‰Á
+		func f = { NULL, "int main", "main", NULL };
+		list_add( funcs, &f );
+
+
+		findFile_find( ".h", "D:\\00.data\\06.ˆêŸ‰ğ“€æ\\netdata-master\\src\\", headerFilePathList );
+		findFile_find( ".c", "D:\\00.data\\06.ˆêŸ‰ğ“€æ\\netdata-master\\src\\", sourceFilePathList );
 
 		analyze_getFuncs( headerFilePathList, funcs );
 
