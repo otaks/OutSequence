@@ -7,3 +7,4 @@ USASE:
   [source path] is required. And [source path] must be finish with "/".
   If [source path] includes spaces, put " on its begging and ending.
 
+Main function must start like "int main".
