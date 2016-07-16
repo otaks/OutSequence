@@ -47,7 +47,9 @@ void list_delete( list t ) {
 			FREE( a->data );
 			break;
 		case STRUCT_FUNC:
+			FREE( ( ( func* )a->data )->mName );
 			FREE( ( ( func* )a->data )->name );
+			FREE( ( ( func* )a->data )->typeAndName );
 			list_delete( ( ( func* )a->data )->callFuncs );
 			FREE( a->data );
 			break;
@@ -100,11 +102,15 @@ int list_add( list t, void* v ) {
 	case STRUCT_FUNC:
 		newNode->data = ( func* )calloc( sizeof( func ), 1 );
 		//モジュール名
-		( ( func* )newNode->data )->mName = ( char* )calloc( strlen( ( ( func* )v )->mName ) + 1, 1 );
-		strcpy( ( char* )( ( func* )newNode->data )->mName, ( ( func* )v )->mName );
+		//( ( func* )newNode->data )->mName = ( char* )calloc( strlen( ( ( func* )v )->mName ) + 1, 1 );
+		//strcpy( ( char* )( ( func* )newNode->data )->mName, ( ( func* )v )->mName );
+		//↑リスト追加時点で未定で、後で個別にmallocする
 		//関数名
 		( ( func* )newNode->data )->name = ( char* )calloc( strlen( ( ( func* )v )->name ) + 1, 1 );
 		strcpy( ( char* )( ( func* )newNode->data )->name, ( ( func* )v )->name );
+		//戻り値の型と関数名
+		( ( func* )newNode->data )->typeAndName = ( char* )calloc( strlen( ( ( func* )v )->typeAndName ) + 1, 1 );
+		strcpy( ( char* )( ( func* )newNode->data )->typeAndName, ( ( func* )v )->typeAndName );
 		//呼び出し関数群
 		( ( func* )newNode->data )->callFuncs = list_create( STRING );
 		break;

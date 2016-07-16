@@ -6,6 +6,13 @@ void analyzeCtl_analyze( list headerFilePathList, list sourceFilePathList, seque
 
 	list funcs = list_create( STRUCT_FUNC );
 
+	//mainŠÖ”•ª’Ç‰Á
+	func f = {NULL, "int main", "main", NULL};
+	//memset( &f, 0x00, sizeof( f ) );
+	//strcpy( f.name, "main" );
+	//strcpy( f.typeAndName, "int main" );
+	list_add( funcs, &f );
+
 	//ŠÖ”–¼ˆê——æ“¾
 	analyze_getFuncs( headerFilePathList, funcs );
 

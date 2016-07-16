@@ -5,8 +5,9 @@
 #include "findFile.h"
 #include "analyzeCtl.h"
 
-static void init( char* dir, list headerFilePathList, list sourceFilePathList, sequence* seq );
+static void init( char* dir, list* headerFilePathList, list* sourceFilePathList, sequence* seq );
 static void fin( list headerFilePathList, list sourceFilePathList, sequence* seq );
+static void output( char* dirName, sequence* seq );
 
 int main( int argc, char *argv[] ) {
 
@@ -14,18 +15,18 @@ int main( int argc, char *argv[] ) {
 	list headerFilePathList;	//ヘッダファイルパスリスト
 	list sourceFilePathList;	//ソースファイルパスリスト
 
-	if( argc != 1 ) {
+	if( argc != 2 ) {
 		return -1;
 	}
 	
 	//初期化
-	init( argv[1], headerFilePathList, sourceFilePathList, &seq );
+	init( argv[1], &headerFilePathList, &sourceFilePathList, &seq );
 
 	//解析
 	analyzeCtl_analyze( headerFilePathList, sourceFilePathList, &seq );
 
 	//出力
-	output( argv[ 1 ], seq );
+	output( argv[ 1 ], &seq );
 
 	//終了処理
 	fin( headerFilePathList, sourceFilePathList, &seq );
@@ -34,19 +35,20 @@ int main( int argc, char *argv[] ) {
 }
 
 //初期化
-static void init( char* dir, list headerFilePathList, list sourceFilePathList, sequence* seq ) {
+static void init( char* dir, list* headerFilePathList, list* sourceFilePathList, sequence* seq ) {
 
-	headerFilePathList = list_create( STRING );
-	sourceFilePathList = list_create( STRING );
+	*headerFilePathList = list_create( STRING );
+	*sourceFilePathList = list_create( STRING );
 
 	memset( seq, 0x00, sizeof( seq ) );
 	seq->moduleNameList = list_create( STRING );
+
 	seq->signalList = list_create( STRUCT_SIGNAL );
 
 	//ヘッダファイルリスト取得
-	findFile_find( ".h", dir, headerFilePathList );
+	findFile_find( ".h", dir, *headerFilePathList );
 	//ソースファイルリスト取得
-	findFile_find( ".c", dir, sourceFilePathList );
+	findFile_find( ".c", dir, *sourceFilePathList );
 }
 
 //終了処理
@@ -58,11 +60,11 @@ static void fin( list headerFilePathList, list sourceFilePathList, sequence* seq
 }
 
 
-void output( char* dirName, sequence* seq ) {
+static void output( char* dirName, sequence* seq ) {
 
 	FILE *fp;
 
-	if( ( fp = fopen( dirName, "w" ) ) == NULL ) {
+	if( ( fp = fopen( "d:\\result.txt", "w" ) ) == NULL ) {
 		printf( "file open error!!\n" );
 		exit( EXIT_FAILURE );
 	}

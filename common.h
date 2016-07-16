@@ -23,6 +23,7 @@ typedef struct sequence_t {
 //関数
 typedef struct _func {
 	char* mName;	//モジュール名
+	char* typeAndName;	//戻り値の型と関数名
 	char* name;	//関数名
 	list callFuncs;	//呼び出し関数群
 }func;	

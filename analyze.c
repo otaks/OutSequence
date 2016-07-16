@@ -18,6 +18,10 @@ static void analyze_getModuleName_s( char* t2, char* h );
 static int analyze_isDefineLine_s( char* line );
 static void analyze_addSignalRec_s( sequence* seq, func* f, func* preF, list funcs );
 static func* analyze_getTargetFunc_s( list funcs, char* targetFuncName );
+static void analyze_gettypeAndName_s( char* line, char* t2 );
+static void analyze_getCallFuncsCore_s( char* src, list funcs, func* f );
+static void analyze_isFunc_s( char* line, list funcs, func* f );
+static char* analyze_findSrc_s( char* typeAndName, list sourceFilePathList );
 
 //関数名一覧取得
 void analyze_getFuncs( list headerFilePathList, list funcs ) {
@@ -40,12 +44,36 @@ void analyze_getFuncs( list headerFilePathList, list funcs ) {
 
 				analyze_getFuncName_s( s, t );
 				f.name = t;
-				analyze_getModuleName_s( t2, h );
-				f.mName = t2;
+				//f.name = calloc( strlen( t ) + 1, 1 );
+				//strcpy( f.name, t );
+				//analyze_getModuleName_s( t2, h );
+				//f.mName = t2;
+				analyze_gettypeAndName_s( s, t2 );
+//				f.typeAndName = t2;
+//				strcpy( calloc( strlen( t ) + 1, 1 ), t );
+				//f.typeAndName = calloc( strlen( t2 ) + 1, 1 );
+				//strcpy( f.typeAndName, t2 );
+				f.typeAndName = t2;
+
 				list_add( funcs, &f );
 			}
 		}
 		fclose( fp );	
+	}
+}
+
+static void analyze_gettypeAndName_s( char* line, char* t2 ) {
+	int i, j;
+	for( i = strlen( line ) - 1; i >= 0; i-- ) {
+		if( line[ i ] == '(' ) {
+			break;
+		}
+	}
+	i--;
+
+	int l = 0;
+	for( int k = 0; k <= i; k++ ) {
+		t2[ l++ ] = line[ k ];
 	}
 }
 
@@ -123,22 +151,52 @@ void analyze_addSignal( sequence* seq, list funcs ) {
 	analyze_addSignalRec_s( seq, ( func* )list_getNode( funcs, 0 ), NULL, funcs );
 }
 
+//static void analyze_addSignalRec_s( sequence* seq, func* f, func* preF, list funcs ) {
+//	printf("%s\n", f->name);
+//	if( list_getNum( f->callFuncs ) != 0 ) {
+//		//当該関数からの呼び出しあり？
+//		for( int i = 0; i < list_getNum( f->callFuncs ); i++ ) {
+//			func* targetF = analyze_getTargetFunc_s( funcs, list_getCharNode( f->callFuncs, i ) );
+//			analyze_addSignalRec_s( seq, targetF, f, funcs );
+//		}
+//	}
+//	else {
+//		//シーケンス図に信号追加
+//		signal s;
+//		memset( &s, 0x00, sizeof( s ) );
+//		s.name = f->name;
+//		s.receiveModuleName = f->mName;
+//		if( preF == NULL ) {
+//			s.sendModuleName = f->mName;
+//		}else{
+//			s.sendModuleName = preF->mName;
+//		}
+//		list_add( seq->signalList, &s );
+//	}
+//}
+
 static void analyze_addSignalRec_s( sequence* seq, func* f, func* preF, list funcs ) {
+	//printf( "%s\n", f->name );
+
+	//シーケンス図に信号追加
+	signal s;
+	memset( &s, 0x00, sizeof( s ) );
+	s.name = f->name;
+	s.receiveModuleName = f->mName;
+	if( preF == NULL ) {
+		s.sendModuleName = f->mName;
+	}
+	else {
+		s.sendModuleName = preF->mName;
+	}
+	list_add( seq->signalList, &s );
+
 	if( list_getNum( f->callFuncs ) != 0 ) {
 		//当該関数からの呼び出しあり？
 		for( int i = 0; i < list_getNum( f->callFuncs ); i++ ) {
 			func* targetF = analyze_getTargetFunc_s( funcs, list_getCharNode( f->callFuncs, i ) );
 			analyze_addSignalRec_s( seq, targetF, f, funcs );
 		}
-	}
-	else {
-		//シーケンス図に信号追加
-		signal s;
-		memset( &s, 0x00, sizeof( s ) );
-		s.name = f->name;
-		s.receiveModuleName = f->mName;
-		s.sendModuleName = preF->mName;
-		list_add( seq->signalList, &s );
 	}
 }
 
@@ -151,12 +209,116 @@ static func* analyze_getTargetFunc_s( list funcs, char* targetFuncName ) {
 	}
 }
 
-//関数リストの呼び出し関数[]部を埋める
+//関数リストの 呼び出し関数[]部 を埋める
 void analyze_getCallFuncs( list sourceFilePathList, list funcs ) {
 	for( int i = 0; i < list_getNum( funcs ); i++ ) {
 		func* f = ( func* )list_getNode( funcs, i );
 
+		//その関数が定義されているソースファイルを見つける
+		char* src = analyze_findSrc_s( f->typeAndName, sourceFilePathList );
+		if( src == NULL )continue;
+		//ソースファイル名からモジュール名取得
+		char t2[ 1000 ] = { 0 };
+		analyze_getModuleName_s( t2, src );
+		f->mName = calloc( strlen( t2 ) + 1, 1 );
+		strcpy( f->mName, t2 );
 		
+		//呼び出し関数取得
+		analyze_getCallFuncsCore_s(src, funcs, f);
 	}
 
 }
+
+//呼び出し関数取得
+static void analyze_getCallFuncsCore_s( char* src, list funcs, func* f ) {
+	////ブロック位置特定
+	//int startRow = 0;
+	//int endRow = 0;
+	//analyze_getStartEndRow( src, f );
+	//for(int = )
+	FILE *fp;
+	char line[ 1000 ];
+
+	if( ( fp = fopen( src, "r" ) ) == NULL ) {
+		printf( "file open error!!\n" );
+		exit( EXIT_FAILURE );
+	}
+
+	int sNum = 0;	//{数
+	int eNum = 0;	//}数
+
+	int flg = 0;
+	while( fgets( line, 1000, fp ) != NULL ) {
+		if( strstr( line, f->typeAndName ) != NULL ) {
+			//return src;
+			flg = 1;
+		}
+		if( flg == 1 ) {
+			//ブランケットカウント
+			{
+				if( strchr( line, '{' ) != NULL ) {
+					sNum++;
+				}
+				if( strchr( line, '}' ) != NULL ) {
+					eNum++;
+				}
+			}
+
+			if( sNum == eNum && sNum != 0) {
+				//その関数内は見終わった
+				break;
+			}
+
+			analyze_isFunc_s( line, funcs, f );
+			//char* tmp = analyze_isFunc_s(line, funcs, f);
+			//if( tmp != NULL ) {
+			//	list_add( f->callFuncs, tmp );
+			//}
+		}
+	}
+	fclose( fp );
+}
+
+//static char* analyze_isFunc_s( char* line, list funcs, func* f ) {
+static void analyze_isFunc_s( char* line, list funcs, func* f ) {
+	for( int i = 0; i < list_getNum( funcs ); i++ ) {
+		func* tf = list_getNode( funcs, i );
+		//char* name = list_getCharNode( funcs, i );
+		char t[ 1000 ] = { 0 };
+		sprintf( t, " %s(", tf->name );
+		//if( (strstr(line, tf->name) != NULL) && (strcmp(f->name, tf->name) != 0)) {
+		if( ( strstr( line, t ) != NULL ) && ( strcmp( f->name, tf->name ) != 0 ) ) {
+			list_add( f->callFuncs, tf->name );
+		}
+	}
+}
+
+////ブロック位置特定
+//static void analyze_getStartEndRow( char* src, func f ) {
+//
+//
+//
+//}
+
+//その関数が定義されているソースファイルを見つける
+static char* analyze_findSrc_s( char* typeAndName, list sourceFilePathList ) {
+	for( int i = 0; i < list_getNum( sourceFilePathList ); i++ ) {
+		char* src = list_getCharNode( sourceFilePathList, i );
+		FILE *fp;
+		char line[ 1000 ];
+
+		if( ( fp = fopen( src, "r" ) ) == NULL ) {
+			printf( "file open error!!\n" );
+			exit( EXIT_FAILURE );
+		}
+
+		while( fgets( line, 1000, fp ) != NULL ) {
+			if( strstr( line, typeAndName ) != NULL ) {
+				return src;
+			}
+		}
+		fclose( fp );
+	}
+	return NULL;
+}
+

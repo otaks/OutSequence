@@ -1,0 +1,3 @@
+@startuml
+lily_alloc -> lily_alloc : lily_malloc
+@enduml
