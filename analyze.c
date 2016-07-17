@@ -351,7 +351,11 @@ static char* analyze_findSrc_s( char* typeAndName, list sourceFilePathList ) {
 		}
 
 		while( fgets( line, 1000, fp ) != NULL ) {
-			if( strstr( line, typeAndName ) != NULL ) {
+			char t[ 1000 ] = { 0 };
+			memset( t, 0x00, sizeof( t ) );
+			sprintf( t, "%s(", typeAndName );
+			//if( strstr( line, typeAndName ) != NULL ) {
+			if( strstr( line, t ) != NULL ) {
 				return src;
 			}
 		}

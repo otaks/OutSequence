@@ -27,7 +27,10 @@ int main( int argc, char *argv[] ) {
 	}
 	
 	//‰Šú‰»
-	init( argv[1], &headerFilePathList, &sourceFilePathList, &seq );
+	char t[ 1000 ] = { 0 };
+	sprintf(t, "%s\\", argv[1]);
+	//init( argv[1], &headerFilePathList, &sourceFilePathList, &seq );
+	init( t, &headerFilePathList, &sourceFilePathList, &seq );
 
 	//‰ğÍ
 	analyzeCtl_analyze( headerFilePathList, sourceFilePathList, &seq );
