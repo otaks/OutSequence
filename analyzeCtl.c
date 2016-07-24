@@ -11,7 +11,7 @@ void analyzeCtl_analyze( list headerFilePathList, list sourceFilePathList, seque
 	list_add( funcs, &f );
 
 	//ŠÖ”–¼ˆê——æ“¾
-	analyze_getFuncs( headerFilePathList, funcs );
+	analyze_getFuncs( headerFilePathList, sourceFilePathList, funcs );
 
 	//ŠÖ”ŒÄ‚Ño‚µˆê——æ“¾
 	analyze_getCallFuncs( sourceFilePathList, funcs );

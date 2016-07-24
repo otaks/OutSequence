@@ -15,18 +15,26 @@ static void analyze_gettypeAndName_s( char* line, char* t2 );
 static void analyze_getCallFuncsCore_s( char* src, list funcs, func* f );
 static void analyze_isFunc_s( char* line, list funcs, func* f );
 static char* analyze_findSrc_s( char* typeAndName, list sourceFilePathList );
-int analyze_hasModule_s( sequence* seq, char* mName );
+static int analyze_hasModule_s( sequence* seq, char* mName );
+static void analyze_getGlobalFuncs( list headerFilePathList, list funcs );
+static void analyze_getStaticFuncs( list sourceFilePathList, list funcs );
 
 //関数名一覧取得
-void analyze_getFuncs( list headerFilePathList, list funcs ) {
+void analyze_getFuncs( list headerFilePathList, list sourceFilePathList, list funcs ) {
+
+	analyze_getGlobalFuncs( headerFilePathList, funcs );
+	analyze_getStaticFuncs( sourceFilePathList, funcs );
+}
+
+static void analyze_getGlobalFuncs( list headerFilePathList, list funcs ) {
 	for( int i = 0; i < list_getNum( headerFilePathList ); i++ ) {
 		char* h = list_getCharNode( headerFilePathList, i );
-		FILE *fp;	
+		FILE *fp;
 		char s[ 1000 ];
 
 		if( ( fp = fopen( h, "r" ) ) == NULL ) {
 			printf( "file open error!!\n" );
-			exit( EXIT_FAILURE );	
+			exit( EXIT_FAILURE );
 		}
 
 		while( fgets( s, 1000, fp ) != NULL ) {
@@ -47,7 +55,40 @@ void analyze_getFuncs( list headerFilePathList, list funcs ) {
 				list_add( funcs, &f );
 			}
 		}
-		fclose( fp );	
+		fclose( fp );
+	}
+}
+
+static void analyze_getStaticFuncs( list sourceFilePathList, list funcs ) {
+	for( int i = 0; i < list_getNum( sourceFilePathList ); i++ ) {
+		char* h = list_getCharNode( sourceFilePathList, i );
+		FILE *fp;
+		char s[ 1000 ];
+
+		if( ( fp = fopen( h, "r" ) ) == NULL ) {
+			printf( "file open error!!\n" );
+			exit( EXIT_FAILURE );
+		}
+
+		while( fgets( s, 1000, fp ) != NULL ) {
+			if( analyze_isStaticDefineLine_s( s ) ) {	//関数プロトタイプ宣言行か
+				func f;
+				memset( &f, 0x00, sizeof( f ) );
+				char t[ 1000 ] = { 0 };
+				char t2[ 1000 ] = { 0 };
+				memset( t, 0x00, sizeof( t ) );
+				memset( t2, 0x00, sizeof( t2 ) );
+
+				analyze_getFuncName_s( s, t );
+				if( strlen( t ) == 0 )continue;
+				f.name = t;
+				analyze_gettypeAndName_s( s, t2 );
+				f.typeAndName = t2;
+
+				list_add( funcs, &f );
+			}
+		}
+		fclose( fp );
 	}
 }
 
@@ -99,6 +140,18 @@ static int analyze_isDefineLine_s( char* line ) {
 		( strchr( line, ')' ) != NULL ) &&
 		( strchr( line, ';' ) != NULL ) &&
 		(line[0] != '#')) {
+		return TRUE;
+	}
+	return FALSE;
+}
+
+
+static int analyze_isStaticDefineLine_s( char* line ) {
+	if( ( strstr( line, "static" ) != NULL ) && 
+		( strchr( line, '(' ) != NULL ) &&
+		( strchr( line, ')' ) != NULL ) &&
+		( strchr( line, ';' ) != NULL ) &&
+		( line[ 0 ] != '#' ) ) {
 		return TRUE;
 	}
 	return FALSE;
@@ -167,7 +220,9 @@ static void analyze_addSignalRec_s( sequence* seq, func* f, func* preF, list fun
 		//当該関数からの呼び出しあり？
 		for( int i = 0; i < list_getNum( f->callFuncs ); i++ ) {
 			func* targetF = analyze_getTargetFunc_s( funcs, list_getCharNode( f->callFuncs, i ) );
-			analyze_addSignalRec_s( seq, targetF, f, funcs );
+			if( strcmp( f->name, targetF->name ) != 0 ) {	//再帰以外
+				analyze_addSignalRec_s( seq, targetF, f, funcs );
+			}
 		}
 	}
 
@@ -233,7 +288,7 @@ static void analyze_getCallFuncsCore_s( char* src, list funcs, func* f ) {
 		memset( t, 0x00, sizeof( t ) );
 		sprintf( t, "%s(", f->typeAndName );
 		//if( strstr( line, f->typeAndName ) != NULL ) {
-			if( strstr( line, t ) != NULL ) {
+		if( ( strstr( line, t ) != NULL ) && ( strchr( line, ';' ) == NULL ) ) {
 			//return src;
 			flg = 1;
 		}
@@ -324,7 +379,7 @@ void analyze_createModuleList( sequence* seq, list funcs ) {
 
 }
 
-int analyze_hasModule_s( sequence* seq, char* mName ) {
+static int analyze_hasModule_s( sequence* seq, char* mName ) {
 	int ret = -1;
 	for( int i = 0; i < list_getNum( seq->moduleNameList ); i++ ) {
 		if( strcmp(mName, list_getCharNode( seq->moduleNameList, i)) == 0 ) {

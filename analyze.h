@@ -4,12 +4,14 @@
 
 /**
  * 関数名リスト取得。
- * ヘッダーファイルから関数名を取得する。
+ * ヘッダーファイルからグローバル関数名、
+ * ソースファイルからスタティック関数名を取得する。
  *
  * @param headerFilePathList ヘッダファイルパスリスト
+ * @param sourceFilePathList ソースファイルパスリスト
  * @param funcs 関数リスト
  */
-void analyze_getFuncs( list headerFilePathList, list funcs );
+void analyze_getFuncs( list headerFilePathList, list sourceFilePathList, list funcs );
 
 /**
 * 呼び出し関数リスト取得。
