@@ -16,6 +16,10 @@ void analyzeCtl_analyze( list headerFilePathList, list sourceFilePathList, seque
 	//関数呼び出し一覧取得
 	analyze_getCallFuncs( sourceFilePathList, funcs );
 
+
+	//モジュールリスト作成
+	analyze_createModuleList( seq, funcs );
+
 	//信号追加
 	analyze_addSignal( seq, funcs );
 

@@ -22,6 +22,15 @@ void analyze_getFuncs( list headerFilePathList, list funcs );
 void analyze_getCallFuncs( sourceFilePathList, funcs );
 
 /**
+* モジュールリスト作成。
+* シーケンス図にモジュールリストを作成する。
+*
+* @param seq シーケンス図
+* @param funcs 関数リスト
+*/
+void analyze_createModuleList( sequence* seq, list funcs );
+
+/**
 * 信号追加。
 * シーケンス図に信号を追加する。
 *

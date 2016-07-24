@@ -82,9 +82,11 @@ static void output( char* dirName, sequence* seq ) {
 	}
 
 	fprintf(fp, "@startuml\n");
+	//ƒ‚ƒWƒ…[ƒ‹–¼
 	for( int i = 0; i < list_getNum( seq->moduleNameList ); i++ ) {
 		fprintf( fp, "actor %s\n", list_getCharNode( seq->moduleNameList, i ) );
 	}
+	//M†
 	for( int i = 0; i < list_getNum( seq->signalList ); i++ ) {
 		signal* s = ( signal* )list_getNode( seq->signalList, i );
 		fprintf( fp, "%s %s %s : %s\n", s->sendModuleName, ((s->isReq==1)?"->":"-->"), s->receiveModuleName, s->name );

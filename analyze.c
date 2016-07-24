@@ -15,6 +15,7 @@ static void analyze_gettypeAndName_s( char* line, char* t2 );
 static void analyze_getCallFuncsCore_s( char* src, list funcs, func* f );
 static void analyze_isFunc_s( char* line, list funcs, func* f );
 static char* analyze_findSrc_s( char* typeAndName, list sourceFilePathList );
+int analyze_hasModule_s( sequence* seq, char* mName );
 
 //関数名一覧取得
 void analyze_getFuncs( list headerFilePathList, list funcs ) {
@@ -176,7 +177,10 @@ static void analyze_addSignalRec_s( sequence* seq, func* f, func* preF, list fun
 	s2.name = " ";
 	s2.receiveModuleName = ( preF == NULL ? f->mName : preF->mName );
 	s2.sendModuleName = f->mName;
-	list_add( seq->signalList, &s2 );
+	if( strcmp( s2.receiveModuleName, s2.sendModuleName ) != 0 ) {
+		//送信元、送信先モジュールが同一の場合、戻りの線を出ないように
+		list_add( seq->signalList, &s2 );
+	}
 }
 
 static func* analyze_getTargetFunc_s( list funcs, char* targetFuncName ) {
@@ -198,6 +202,7 @@ void analyze_getCallFuncs( list sourceFilePathList, list funcs ) {
 		if( src == NULL )continue;
 		//ソースファイル名からモジュール名取得
 		char t2[ 1000 ] = { 0 };
+		memset( t2, 0x00, sizeof( t2 ) );
 		analyze_getModuleName_s( t2, src );
 		f->mName = calloc( strlen( t2 ) + 1, 1 );
 		strcpy( f->mName, t2 );
@@ -210,11 +215,7 @@ void analyze_getCallFuncs( list sourceFilePathList, list funcs ) {
 
 //呼び出し関数取得
 static void analyze_getCallFuncsCore_s( char* src, list funcs, func* f ) {
-	////ブロック位置特定
-	//int startRow = 0;
-	//int endRow = 0;
-	//analyze_getStartEndRow( src, f );
-	//for(int = )
+
 	FILE *fp;
 	char line[ 1000 ];
 
@@ -228,7 +229,11 @@ static void analyze_getCallFuncsCore_s( char* src, list funcs, func* f ) {
 
 	int flg = 0;
 	while( fgets( line, 1000, fp ) != NULL ) {
-		if( strstr( line, f->typeAndName ) != NULL ) {
+		char t[ 1000 ];
+		memset( t, 0x00, sizeof( t ) );
+		sprintf( t, "%s(", f->typeAndName );
+		//if( strstr( line, f->typeAndName ) != NULL ) {
+			if( strstr( line, t ) != NULL ) {
 			//return src;
 			flg = 1;
 		}
@@ -299,3 +304,34 @@ static char* analyze_findSrc_s( char* typeAndName, list sourceFilePathList ) {
 	return NULL;
 }
 
+/**
+* モジュールリスト作成。
+* シーケンス図にモジュールリストを作成する。
+*
+* @param seq シーケンス図
+* @param funcs 関数リスト
+*/
+void analyze_createModuleList( sequence* seq, list funcs ) {
+
+	for( int i = 0; i < list_getNum( funcs ); i++ ) {
+		char* mName = ( ( func * )list_getNode( funcs, i ) )->mName;
+
+		if( ( mName != NULL ) && (analyze_hasModule_s(seq, mName) == -1)) {
+			list_add( seq->moduleNameList, mName );
+		}
+	}
+
+
+}
+
+int analyze_hasModule_s( sequence* seq, char* mName ) {
+	int ret = -1;
+	for( int i = 0; i < list_getNum( seq->moduleNameList ); i++ ) {
+		if( strcmp(mName, list_getCharNode( seq->moduleNameList, i)) == 0 ) {
+			ret = 0;
+			break;
+		}
+	}
+
+	return ret;
+}
