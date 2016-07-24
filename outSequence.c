@@ -76,7 +76,6 @@ static void output( char* dirName, sequence* seq ) {
 
 	FILE *fp;
 
-	//if( ( fp = fopen( "d:\\result.txt", "w" ) ) == NULL ) {
 	if( ( fp = fopen( "result.txt", "w" ) ) == NULL ) {
 		printf( "file open error!!\n" );
 		exit( EXIT_FAILURE );

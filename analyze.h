@@ -2,7 +2,31 @@
 
 #include "common.h"
 
+/**
+ * 関数名リスト取得。
+ * ヘッダーファイルから関数名を取得する。
+ *
+ * @param headerFilePathList ヘッダファイルパスリスト
+ * @param funcs 関数リスト
+ */
 void analyze_getFuncs( list headerFilePathList, list funcs );
+
+/**
+* 呼び出し関数リスト取得。
+* 関数名リストを元にソースファイルから、
+* 関数毎の呼び出し関数リストを取得する。
+*
+* @param headerFilePathList ヘッダファイルパスリスト
+* @param funcs 関数リスト
+*/
 void analyze_getCallFuncs( sourceFilePathList, funcs );
+
+/**
+* 信号追加。
+* シーケンス図に信号を追加する。
+*
+* @param seq シーケンス図
+* @param funcs 関数リスト
+*/
 void analyze_addSignal( sequence* seq, list funcs );
 

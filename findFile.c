@@ -4,7 +4,6 @@
 static void findFile_findRec_s( char * ptn, char* lpszDir, list l );
 static int findFile_checkPtn( char* fileName, char* ptn );
 
-//void findFile_find( file * ret, char * ptn, char* lpszDir, list l )
 
 void findFile_find( char * ptn, char* lpszDir, list l ) {
 	char t[ 1000 ];
@@ -72,23 +71,4 @@ static int findFile_checkPtn( char* fileName, char* ptn ) {
 	}
 	return ret;
 }
-
-//
-//void findFile_addPath_s( file* ret, char* lpszSDir ) {
-//	file* tmp = calloc( sizeof( file ), 1 );
-//	tmp->name = calloc( strlen( lpszSDir ) + 1, 1 );
-//	strcpy( tmp->name, lpszSDir );
-//
-//	if( ret == NULL ) {	//—v‘f‚È‚µ
-//		ret = tmp;
-//		return;
-//	}
-//	else {
-//		//ÅŒã‚Ü‚ÅŽèŒJ‚Á‚ÄA––”ö‚É’Ç‰Á
-//		while( ret->next != NULL ) {
-//			ret = ret->next;
-//		}
-//		ret->next = tmp;
-//	}
-//}
 

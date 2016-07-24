@@ -13,7 +13,7 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="ソース ファイル\test">
+    <Filter Include="test">
       <UniqueIdentifier>{49339c7d-1dbf-42dc-ab4b-203e64834b95}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -31,13 +31,13 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="test_analyze.c">
-      <Filter>ソース ファイル\test</Filter>
+      <Filter>test</Filter>
     </ClCompile>
     <ClCompile Include="test_findFile.c">
-      <Filter>ソース ファイル\test</Filter>
+      <Filter>test</Filter>
     </ClCompile>
     <ClCompile Include="test_list.c">
-      <Filter>ソース ファイル\test</Filter>
+      <Filter>test</Filter>
     </ClCompile>
     <ClCompile Include="analyzeCtl.c">
       <Filter>ソース ファイル</Filter>
@@ -46,7 +46,7 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="test_log.c">
-      <Filter>ソース ファイル\test</Filter>
+      <Filter>test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

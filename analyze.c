@@ -6,13 +6,6 @@
 #include "analyze.h"
 
 
-//typedef struct _funcs {
-//	int num;	//関数総数
-//	list f;
-//}funcs;
-
-
-
 static void analyze_getFuncName_s( char* line, char* t );
 static void analyze_getModuleName_s( char* t2, char* h );
 static int analyze_isDefineLine_s( char* line );
@@ -47,15 +40,7 @@ void analyze_getFuncs( list headerFilePathList, list funcs ) {
 				analyze_getFuncName_s( s, t );
 				if( strlen( t ) == 0 )continue;
 				f.name = t;
-				//f.name = calloc( strlen( t ) + 1, 1 );
-				//strcpy( f.name, t );
-				//analyze_getModuleName_s( t2, h );
-				//f.mName = t2;
 				analyze_gettypeAndName_s( s, t2 );
-//				f.typeAndName = t2;
-//				strcpy( calloc( strlen( t ) + 1, 1 ), t );
-				//f.typeAndName = calloc( strlen( t2 ) + 1, 1 );
-				//strcpy( f.typeAndName, t2 );
 				f.typeAndName = t2;
 
 				list_add( funcs, &f );
@@ -67,7 +52,6 @@ void analyze_getFuncs( list headerFilePathList, list funcs ) {
 
 static void analyze_gettypeAndName_s( char* line, char* t2 ) {
 	int i, j;
-	//for( i = strlen( line ) - 1; i >= 0; i-- ) {
 	for( i = 0; i < strlen( line ); i++ ) {
 		if( line[ i ] == '(' ) {
 			break;
@@ -133,7 +117,6 @@ void *lily_mallock(size_t);
 */
 static void analyze_getFuncName_s( char* line, char* t ) {
 	int i, j;
-	//for( i = strlen( line ) - 1; i >= 0; i-- ) {
 	for( i = 0; i < strlen( line ); i++ ) {
 		if( line[ i ] == '(' ) {
 			break;
@@ -163,29 +146,6 @@ void analyze_addSignal( sequence* seq, list funcs ) {
 	analyze_addSignalRec_s( seq, ( func* )list_getNode( funcs, 0 ), NULL, funcs );
 }
 
-//static void analyze_addSignalRec_s( sequence* seq, func* f, func* preF, list funcs ) {
-//	printf("%s\n", f->name);
-//	if( list_getNum( f->callFuncs ) != 0 ) {
-//		//当該関数からの呼び出しあり？
-//		for( int i = 0; i < list_getNum( f->callFuncs ); i++ ) {
-//			func* targetF = analyze_getTargetFunc_s( funcs, list_getCharNode( f->callFuncs, i ) );
-//			analyze_addSignalRec_s( seq, targetF, f, funcs );
-//		}
-//	}
-//	else {
-//		//シーケンス図に信号追加
-//		signal s;
-//		memset( &s, 0x00, sizeof( s ) );
-//		s.name = f->name;
-//		s.receiveModuleName = f->mName;
-//		if( preF == NULL ) {
-//			s.sendModuleName = f->mName;
-//		}else{
-//			s.sendModuleName = preF->mName;
-//		}
-//		list_add( seq->signalList, &s );
-//	}
-//}
 
 static void analyze_addSignalRec_s( sequence* seq, func* f, func* preF, list funcs ) {
 	//printf( "%s\n", f->name );
@@ -197,12 +157,6 @@ static void analyze_addSignalRec_s( sequence* seq, func* f, func* preF, list fun
 	s.name = f->name;
 	s.receiveModuleName = f->mName;
 	
-	//if( preF == NULL ) {
-	//	s.sendModuleName = f->mName;
-	//}
-	//else {
-	//	s.sendModuleName = preF->mName;
-	//}
 	s.sendModuleName = ( preF == NULL ? f->mName : preF->mName );
 	s.isReq = 1;
 	//if( f->mName == NULL )return;
@@ -222,14 +176,6 @@ static void analyze_addSignalRec_s( sequence* seq, func* f, func* preF, list fun
 	s2.name = " ";
 	s2.receiveModuleName = ( preF == NULL ? f->mName : preF->mName );
 	s2.sendModuleName = f->mName;
-	//if( preF == NULL ) {
-	//	s2.receiveModuleName = preF->mName;
-	//}else{
-	//	s2.sendModuleName = preF->mName;
-	//}
-	//else {
-	//	s2.sendModuleName = f->mName;
-	//}
 	list_add( seq->signalList, &s2 );
 }
 
@@ -303,10 +249,6 @@ static void analyze_getCallFuncsCore_s( char* src, list funcs, func* f ) {
 			}
 
 			analyze_isFunc_s( line, funcs, f );
-			//char* tmp = analyze_isFunc_s(line, funcs, f);
-			//if( tmp != NULL ) {
-			//	list_add( f->callFuncs, tmp );
-			//}
 		}
 	}
 	fclose( fp );
@@ -330,13 +272,6 @@ static void analyze_isFunc_s( char* line, list funcs, func* f ) {
 		}
 	}
 }
-
-////ブロック位置特定
-//static void analyze_getStartEndRow( char* src, func f ) {
-//
-//
-//
-//}
 
 //その関数が定義されているソースファイルを見つける
 static char* analyze_findSrc_s( char* typeAndName, list sourceFilePathList ) {
