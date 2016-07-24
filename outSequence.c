@@ -90,6 +90,8 @@ static void output( char* dirName, sequence* seq ) {
 	for( int i = 0; i < list_getNum( seq->signalList ); i++ ) {
 		signal* s = ( signal* )list_getNode( seq->signalList, i );
 		fprintf( fp, "%s %s %s : %s\n", s->sendModuleName, ((s->isReq==1)?"->":"-->"), s->receiveModuleName, s->name );
+		fprintf( fp, "%s ", ( ( s->isReq == 1 ) ? "activate" : "deactivate" ) );
+		fprintf( fp, "%s\n", ( ( s->isReq == 1 ) ? s->receiveModuleName : s->sendModuleName ) );
 	}
 	fprintf( fp, "@enduml\n" );
 

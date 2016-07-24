@@ -177,10 +177,10 @@ static void analyze_addSignalRec_s( sequence* seq, func* f, func* preF, list fun
 	s2.name = " ";
 	s2.receiveModuleName = ( preF == NULL ? f->mName : preF->mName );
 	s2.sendModuleName = f->mName;
-	if( strcmp( s2.receiveModuleName, s2.sendModuleName ) != 0 ) {
+	//if( strcmp( s2.receiveModuleName, s2.sendModuleName ) != 0 ) {
 		//送信元、送信先モジュールが同一の場合、戻りの線を出ないように
 		list_add( seq->signalList, &s2 );
-	}
+	//}
 }
 
 static func* analyze_getTargetFunc_s( list funcs, char* targetFuncName ) {
