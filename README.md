@@ -3,8 +3,10 @@ This tool analyzes c project and outputs text for plantUML when you create a seq
 
 USASE:
   outSequence.exe [source path]
-  
+
   [source path] is required. And [source path] must be finish without "/".
   If [source path] includes spaces, put " on its begging and ending.
 
 Main function must start like "int main".
+
+[test](https://github.com/otaks/OutSequence/blob/master/doc/design.md)
